@@ -29,3 +29,34 @@ from src.validator import detect_format, validate_csv, validate_json, validate_p
 from src.processor import read_bytes_to_df, clean_df
 from src.db import upsert_sales, log_file_status
 from src.config import MINIO_BUCKET
+
+
+# -------------------------------
+# Email notification callbacks
+# -------------------------------
+def notify_success(context):
+    dag_id = context['dag'].dag_id
+    run_id = context['run_id']
+    subject = f"✅ DAG {dag_id} succeeded!"
+    html_content = f"""
+    <h3>DAG Run Succeeded</h3>
+    <p>DAG: {dag_id}</p>
+    <p>Run ID: {run_id}</p>
+    <p>Execution Time: {context['execution_date']}</p>
+    <p><a href="{context['task_instance'].log_url}">View Logs</a></p>
+    """
+    send_email(to=["kwame.boateng@amalitechtraining.org"], subject=subject, html_content=html_content)
+
+
+def notify_failure(context):
+    dag_id = context['dag'].dag_id
+    run_id = context['run_id']
+    subject = f"❌ DAG {dag_id} failed!"
+    html_content = f"""
+    <h3>DAG Run Failed</h3>
+    <p>DAG: {dag_id}</p>
+    <p>Run ID: {run_id}</p>
+    <p>Execution Time: {context['execution_date']}</p>
+    <p><a href="{context['task_instance'].log_url}">View Logs</a></p>
+    """
+    send_email(to=["kwame.boateng@amalitechtraining.org"], subject=subject, html_content=html_content)
