@@ -197,6 +197,19 @@ def industrial_ingest_dag():
             move_object(MINIO_BUCKET, key, key.replace("incoming/", "failed/loading_failed/"))
             raise
 
+     # ---- DAG flow ----
+    keys = list_files()
+    results = validate_file.expand(key=keys)
+
+    quarantine_file.expand(result=results)
+    processed = process_file.expand(result=results)
+    load_to_postgres.expand(process_result=processed)
+
+    wait_for_files >> keys
+
+
+dag = industrial_ingest_dag()       
+
 
 
 
