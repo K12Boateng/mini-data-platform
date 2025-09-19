@@ -139,4 +139,17 @@ def industrial_ingest_dag():
             logging.exception("Validation error for %s: %s", key, e)
             log_file_status(key, MINIO_BUCKET, "validation_failed", rows=None, error=str(e))
             return {"key": key, "valid": False, "error": str(e)}
+        
+
+        # ---- Quarantine invalid ----
+    @task()
+    def quarantine_file(result: dict):
+        key = result["key"]
+        dest = key.replace("incoming/", "failed/validation_failed/")
+        try:
+            move_object(MINIO_BUCKET, key, dest)
+            log_file_status(key, MINIO_BUCKET, "validation_failed", rows=0, error=result.get("error"))
+        except Exception as e:
+            logging.exception("Failed to quarantine %s: %s", key, e)
+
 
