@@ -67,7 +67,7 @@ mini-data-platform/
 
 ### 1. Clone repository
 ```bash
-git clone <your-repo-url> mini-data-platform
+git clone https://github.com/K12Boateng/mini-data-platform.git
 cd mini-data-platform
 ```
 
@@ -75,15 +75,15 @@ cd mini-data-platform
 Create a `.env` file:
 ```env
 # Postgres
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgrespass007
-POSTGRES_DB=sales_db
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
+POSTGRES_USER=YOUR_POSTGRES_uSER
+POSTGRES_PASSWORD=YOUR_POSTGRES_PASSWORD
+POSTGRES_DB=YOUR_POSTGRES_DB_NAME
+POSTGRES_HOST=POSTGRES_HOST_NAME
+POSTGRES_PORT=PORT_NUMBER
 
 # MinIO
-MINIO_ACCESS_KEY=minioadmin
-MINIO_SECRET_KEY=minioadmin
+MINIO_ACCESS_KEY=YOUR_MINIO_ACCESS_KEY
+MINIO_SECRET_KEY=YOUR_MINIO_SECRET_ACCESS
 MINIO_BUCKET=sales-incoming
 MINIO_ENDPOINT=http://minio:9000
 ```
