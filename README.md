@@ -32,17 +32,17 @@ mini-data-platform/
 │       └── generator.py                   # Synthetic data generator (for testing)
 │   ├── process_sales_dags.py              # Airflow DAG definition
 ├── diagram/
-│   └── architecture.png              # Architecture Diagram
+│   └── architecture.png                   # Architecture Diagram
 ├── docker/
-│   └── docker-compose.yml            # Container Orchestration
+│   └── docker-compose.yml                 # Container Orchestration
 ├── imgs/
-│   └── screenshots.png               # Screenshots of project running
+│   └── screenshots.png                    # Screenshots of project running
 ├── sql/
-│   └── create_tables.sql             # Creates sales and file_ingestion_log tables
+│   └── create_tables.sql                  # Creates sales and file_ingestion_log tables
 ├── data/
-│   └── sales.csv                     # Containes generated csv data
-└── README.md                         # Project documentation
-│   ├──requirements.txt               # packages requirements
+│   └── sales.csv                          # Containes generated csv data
+└── README.md                              # Project documentation
+│   ├──requirements.txt                    # packages requirements
 
 ```
 
