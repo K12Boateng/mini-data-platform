@@ -60,3 +60,15 @@ def notify_failure(context):
     <p><a href="{context['task_instance'].log_url}">View Logs</a></p>
     """
     send_email(to=["kwame.boateng@amalitechtraining.org"], subject=subject, html_content=html_content)
+
+
+# -------------------------------
+# Default Args
+# -------------------------------
+DEFAULT_ARGS = {
+    "owner": "data-engineer",
+    "depends_on_past": False,
+    "email_on_failure": False,   # we handle via callback
+    "retries": 1,
+    "retry_delay": timedelta(minutes=2)
+}
