@@ -172,6 +172,31 @@ def industrial_ingest_dag():
             log_file_status(key, MINIO_BUCKET, "processing_failed", rows=0, error=str(e))
             move_object(MINIO_BUCKET, key, key.replace("incoming/", "failed/processing_failed/"))
             return {"key": key, "rows": 0, "payload": None, "error": str(e)}
+        
+    # ---- Load to Postgres ----
+    @task(retries=2, retry_delay=timedelta(seconds=30))
+    def load_to_postgres(process_result: dict):
+        import pandas as pd
+        key = process_result["key"]
+        try:
+            payload = process_result.get("payload")
+            if not payload:
+                raise ValueError("No payload to load")
+
+            df = pd.read_csv(io.StringIO(payload))
+            rows_loaded = upsert_sales(df)
+
+            move_object(MINIO_BUCKET, key, key.replace("incoming/", "processed/"))
+            log_file_status(key, MINIO_BUCKET, "loaded", rows=rows_loaded, error=None)
+
+            return {"key": key, "rows_loaded": rows_loaded}
+
+        except Exception as e:
+            logging.exception("Load failed for %s: %s", key, e)
+            log_file_status(key, MINIO_BUCKET, "load_failed", rows=0, error=str(e))
+            move_object(MINIO_BUCKET, key, key.replace("incoming/", "failed/loading_failed/"))
+            raise
+
 
 
 
