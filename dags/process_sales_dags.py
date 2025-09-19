@@ -72,3 +72,34 @@ DEFAULT_ARGS = {
     "retries": 1,
     "retry_delay": timedelta(minutes=2)
 }
+
+
+# -------------------------------
+# DAG Definition
+# -------------------------------
+@dag(
+    dag_id="industrial_sales_ingest",
+    default_args=DEFAULT_ARGS,
+    schedule_interval="* * * * *",#enable trigger via sensor on MINIO
+    start_date=datetime(2024, 1, 1),
+    catchup=False,
+    max_active_runs=1,
+    tags=["ingest", "minio", "sales"],
+    on_success_callback=notify_success,
+    on_failure_callback=notify_failure,
+)
+def industrial_ingest_dag():
+
+    # ---- Sensor: Wait for new files ----
+    def _files_exist():
+        ensure_bucket(MINIO_BUCKET)
+        objs = list_objects(MINIO_BUCKET, prefix="incoming/")
+        return len(objs) > 0
+
+    wait_for_files = PythonSensor(
+        task_id="wait_for_incoming_files",
+        python_callable=_files_exist,
+        poke_interval=30,
+        timeout=60 * 15,  # 15 min
+        mode="reschedule",
+    )
