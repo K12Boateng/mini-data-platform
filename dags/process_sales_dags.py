@@ -152,4 +152,26 @@ def industrial_ingest_dag():
         except Exception as e:
             logging.exception("Failed to quarantine %s: %s", key, e)
 
+     # ---- Process valid ----
+    @task(retries=2, retry_delay=timedelta(seconds=30))
+    def process_file(result: dict):
+        key = result["key"]
+        try:
+            data = download_to_bytes(MINIO_BUCKET, key)
+            df = read_bytes_to_df(data, key)
+            df_clean = clean_df(df)
+
+            rows = len(df_clean)
+            csv_bytes = df_clean.to_csv(index=False).encode("utf-8")
+
+            log_file_status(key, MINIO_BUCKET, "processed", rows=rows, error=None)
+            return {"key": key, "rows": rows, "payload": csv_bytes.decode("utf-8")}
+
+        except Exception as e:
+            logging.exception("Processing failed for %s: %s", key, e)
+            log_file_status(key, MINIO_BUCKET, "processing_failed", rows=0, error=str(e))
+            move_object(MINIO_BUCKET, key, key.replace("incoming/", "failed/processing_failed/"))
+            return {"key": key, "rows": 0, "payload": None, "error": str(e)}
+
+
 
