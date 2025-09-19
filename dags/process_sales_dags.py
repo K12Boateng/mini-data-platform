@@ -103,3 +103,40 @@ def industrial_ingest_dag():
         timeout=60 * 15,  # 15 min
         mode="reschedule",
     )
+
+    # ---- List files ----
+    @task()
+    def list_files():
+        ensure_bucket(MINIO_BUCKET)
+        objects = list_objects(MINIO_BUCKET, prefix="incoming/")
+        keys = [obj["Key"] for obj in objects]
+        logging.info("Found %d files: %s", len(keys), keys)
+        return keys
+
+    # ---- Validate file ----
+    @task()
+    def validate_file(key: str):
+        try:
+            data = download_to_bytes(MINIO_BUCKET, key)
+            fmt = detect_format(key, data)
+
+            if fmt == "csv":
+                valid, msg = validate_csv(data)
+            elif fmt == "json":
+                valid, msg = validate_json(data)
+            elif fmt == "parquet":
+                valid, msg = validate_parquet(data)
+            else:
+                valid, msg = False, f"Unknown format: {fmt}"
+
+            log_file_status(key, MINIO_BUCKET,
+                            "validated" if valid else "validation_failed",
+                            rows=None, error=None if valid else msg)
+
+            return {"key": key, "valid": valid, "error": msg}
+
+        except Exception as e:
+            logging.exception("Validation error for %s: %s", key, e)
+            log_file_status(key, MINIO_BUCKET, "validation_failed", rows=None, error=str(e))
+            return {"key": key, "valid": False, "error": str(e)}
+
