@@ -8,16 +8,16 @@ import os
 
 # MinIO (S3-compatible) settings
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT", "http://minio:9000")
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "minioadmin")
-MINIO_BUCKET = os.getenv("MINIO_BUCKET", "sales-incoming")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY", "YOUR_MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY", "YOUR_MINIO_SECRET_KEY")
+MINIO_BUCKET = os.getenv("MINIO_BUCKET", "YOUR_MINIO_BUCKET")
 
 # Postgres settings
-PG_USER = os.getenv("POSTGRES_USER", "postgres")
-PG_PASS = os.getenv("POSTGRES_PASSWORD", "postgrespass007")
-PG_HOST = os.getenv("POSTGRES_HOST", "postgres")
+PG_USER = os.getenv("POSTGRES_USER", "YOUR_POSTGRES_USER")
+PG_PASS = os.getenv("POSTGRES_PASSWORD", "YOUR_POSTGRES_PASSWORD")
+PG_HOST = os.getenv("POSTGRES_HOST", "YOUR_POSTGRES_HOST_NAME")
 PG_PORT = int(os.getenv("POSTGRES_PORT", 5432))
-PG_DB = os.getenv("POSTGRES_DB", "sales_db")
+PG_DB = os.getenv("POSTGRES_DB", "YOUR_POSTGRES_DB")
 PG_CONN_DICT = {
     "host": PG_HOST,
     "port": PG_PORT,
