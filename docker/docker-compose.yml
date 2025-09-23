@@ -62,7 +62,6 @@ services:
       MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
       MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
       PYTHONPATH: "/opt/airflow:/opt/airflow/src:/opt/airflow/dags"
-      # PYTHONPATH: "/opt/airflow/src:/opt/airflow/dags"
     volumes:
       - ../dags:/opt/airflow/dags
       - ../src:/opt/airflow/src
